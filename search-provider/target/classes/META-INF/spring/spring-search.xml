@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+
+     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+
+	<!-- 开启注解配置 -->
+	<context:annotation-config />
+
+	<!-- 开启事务注解驱动 -->
+	<tx:annotation-driven />
+
+	<!-- 扫描service层 -->
+	<context:component-scan base-package="com.mysoft.b2b.search" />
+	
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">  
+        <property name="locations">  
+           <list>  
+              <value>classpath:*.properties</value>
+            </list>  
+        </property>  
+    </bean>  
+	
+	<!-- MongDB 数据源 -->
+	<bean id="mongoDBService" class="com.mysoft.b2b.search.mongodb.MongoDBServiceImpl" init-method="creatMongoDb">		
+		<property name="adds" value="${mongodb.service.adds}"></property>
+		<property name="databaseName" value="${mongodb.databaseName}"></property>
+		<property name="userName" value="${mongodb.userName}"></property>
+		<property name="password" value="${mongodb.password}"></property>
+	</bean>
+	
+	<!-- mysql数据源 -->
+	<bean id="mysqlCompany" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="url" value="${mysql.db_company.url}" />
+		<property name="username" value="${mysql.db_company.username}" />
+		<property name="password" value="${mysql.db_company.password}" />
+		<property name="maxActive" value="${mysql.db_company.maxActive}" />
+		<property name="initialSize" value="${mysql.db_company.initialSize}" />
+		<property name="maxWait" value="${mysql.db_company.maxWait}" />
+		<property name="minIdle" value="${mysql.db_company.minIdle}" />
+		<property name="timeBetweenEvictionRunsMillis" value="${mysql.db_company.timeBetweenEvictionRunsMillis}" />
+		<property name="minEvictableIdleTimeMillis" value="${mysql.db_company.minEvictableIdleTimeMillis}" />
+		<property name="validationQuery" value="${mysql.db_company.validationQuery}" />
+		<property name="testWhileIdle" value="${mysql.db_company.testWhileIdle}" />
+		<property name="testOnBorrow" value="${mysql.db_company.testOnBorrow}" />
+		<property name="testOnReturn" value="${mysql.db_company.testOnReturn}" />
+		<property name="filters" value="${mysql.db_company.filters}" />
+	</bean>
+	
+	<bean id="jdbcCompany" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource">
+			<ref bean="mysqlCompany" />
+		</property>
+	</bean>
+	
+	<bean id="mysqlSearch" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="url" value="${mysql.db_search.url}" />
+		<property name="username" value="${mysql.db_search.username}" />
+		<property name="password" value="${mysql.db_search.password}" />
+		<property name="maxActive" value="${mysql.db_search.maxActive}" />
+		<property name="initialSize" value="${mysql.db_search.initialSize}" />
+		<property name="maxWait" value="${mysql.db_search.maxWait}" />
+		<property name="minIdle" value="${mysql.db_search.minIdle}" />
+		<property name="timeBetweenEvictionRunsMillis" value="${mysql.db_search.timeBetweenEvictionRunsMillis}" />
+		<property name="minEvictableIdleTimeMillis" value="${mysql.db_search.minEvictableIdleTimeMillis}" />
+		<property name="validationQuery" value="${mysql.db_search.validationQuery}" />
+		<property name="testWhileIdle" value="${mysql.db_search.testWhileIdle}" />
+		<property name="testOnBorrow" value="${mysql.db_search.testOnBorrow}" />
+		<property name="testOnReturn" value="${mysql.db_search.testOnReturn}" />
+		<property name="filters" value="${mysql.db_search.filters}" />
+	</bean>
+	
+	<bean id="jdbcSearch" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource">
+			<ref bean="mysqlSearch" />
+		</property>
+	</bean>
+	
+</beans>
+

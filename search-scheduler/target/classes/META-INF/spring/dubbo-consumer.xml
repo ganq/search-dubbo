@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+	<dubbo:reference id="basicCategoryService" interface="com.mysoft.b2b.bizsupport.api.BasicCategoryService"  check="false" />
+	<dubbo:reference id="operationCategoryService" interface="com.mysoft.b2b.bizsupport.api.OperationCategoryService"  check="false"/>
+    <dubbo:reference id="dictionaryService" interface="com.mysoft.b2b.basicsystem.settings.api.DictionaryService"  check="false" />
+    <dubbo:reference id="biddingService" interface="com.mysoft.b2b.search.spi.bidding.BiddingService"  check="false" />
+	<dubbo:reference id="supplierService" interface="com.mysoft.b2b.search.spi.supplier.SupplierService"  check="false" />
+	<dubbo:reference id="developerService" interface="com.mysoft.b2b.search.spi.developer.DeveloperService"  check="false" />
+    <dubbo:reference id="recruitService" interface="com.mysoft.b2b.search.spi.recruit.RecruitService"  check="false" />
+
+</beans>
