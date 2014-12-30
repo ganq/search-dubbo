@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+	<dubbo:service interface="com.mysoft.b2b.search.api.AnnouncementSearchService" ref="announcementSearchService" register="false"/>
+	<dubbo:service interface="com.mysoft.b2b.search.api.SupplierSearchService" ref="supplierSearchService"  register="false"/>
+	<dubbo:service interface="com.mysoft.b2b.search.api.AnnouncementSubscribeService" ref="announcementSubscribeService"  register="false"/>
+	<dubbo:service interface="com.mysoft.b2b.search.api.DeveloperSearchService" ref="developerSearchService"  register="false"/>
+	<dubbo:service interface="com.mysoft.b2b.search.api.SearchSuggestService" ref="searchSuggestService"  register="false"/>
+    <dubbo:service interface="com.mysoft.b2b.search.api.CategoryService" ref="categoryService"  register="false"/>
+    <dubbo:service interface="com.mysoft.b2b.search.api.RecruitSearchService" ref="recruitSearchService"  register="false"/>
+
+
+    <dubbo:service interface="com.mysoft.b2b.search.api.weixin.SupplierSearchForWeixinService" ref="supplierSearchForWeixinService"  register="false"/>
+	<dubbo:service interface="com.mysoft.b2b.search.api.weixin.BiddingSearchForWeixinService" ref="biddingSearchForWeixinService"  register="false"/>
+    <dubbo:service interface="com.mysoft.b2b.search.api.weixin.RecruitSearchForWeixinService" ref="recruitSearchForWeixinService"  register="false"/>
+
+
+
+</beans> 
