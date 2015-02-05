@@ -1,8 +1,8 @@
 package com.mysoft.b2b.search.api;
 
-import java.util.Map;
-
 import com.mysoft.b2b.search.param.DeveloperParam;
+
+import java.util.Map;
 
 /**
  * 开发商搜索

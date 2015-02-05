@@ -30,16 +30,12 @@ public class ClearTimeFlagScheduler extends MysoftJob{
 	 */
 	private void clearDateKey(){
 		
-		PropertiesUtil.setKey(PropertiesUtil.SOLR_CORE_ANNOUNCEMENTS_LAST_MODIFY_DATE, "");
-		PropertiesUtil.setKey(PropertiesUtil.SOLR_CORE_SUPPLIER_LAST_MODIFY_DATE, "");
-        PropertiesUtil.setKey(PropertiesUtil.SOLR_CORE_DEVELOPER_LAST_MODIFY_DATE, "");
-        PropertiesUtil.setKey(PropertiesUtil.SOLR_CORE_RECRUIT_LAST_MODIFY_DATE, "");
+		PropertiesUtil.setSolrDateKey(PropertiesUtil.SOLR_CORE_ANNOUNCEMENTS_LAST_MODIFY_DATE, "");
+		PropertiesUtil.setSolrDateKey(PropertiesUtil.SOLR_CORE_SUPPLIER_LAST_MODIFY_DATE, "");
+        PropertiesUtil.setSolrDateKey(PropertiesUtil.SOLR_CORE_DEVELOPER_LAST_MODIFY_DATE, "");
+        PropertiesUtil.setSolrDateKey(PropertiesUtil.SOLR_CORE_RECRUIT_LAST_MODIFY_DATE, "");
 
-        logger.info("清除键值成功!当前键值为:");
-		for ( Entry<Object, Object> env : PropertiesUtil.prop.entrySet()) {
-			logger.info(env.getKey()+"="+env.getValue());
-		}
-		
+        logger.info("清除日期标记成功!");
 		categoryDataComponent.init();
 	}
 	

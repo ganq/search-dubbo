@@ -1,8 +1,8 @@
 package com.mysoft.b2b.search.param;
 
-import java.util.Date;
-
 import com.google.code.morphia.annotations.Entity;
+
+import java.util.Date;
 
 /**
  * 搜索记录参数

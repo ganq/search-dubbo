@@ -94,8 +94,8 @@ public class AnnouncementSearchServiceImpl implements AnnouncementSearchService 
                 analysisWords.add(announcementParam.getKeyword());
             }
             word  = "(" + StringUtils.join(analysisWords.toArray(), " ") + ")";
-			dos.add(new SolrQueryBO().setfN("title").setHighlightField(true));
-			dos.add(new SolrQueryBO().setfN("biddingRange").setHighlightField(true));
+			/*dos.add(new SolrQueryBO().setfN("title").setHighlightField(true));
+			dos.add(new SolrQueryBO().setfN("biddingRange").setHighlightField(true));*/
 			
 			
 			dos.add(new SolrQueryBO().setCustomQueryStr(word).setQueryField(true));
@@ -288,8 +288,11 @@ public class AnnouncementSearchServiceImpl implements AnnouncementSearchService 
 			}*/
 			
 			// 设置标题高亮
-			BaseUtil.setHighlightText(queryResponse, "biddingId", "title",word,false);
-			BaseUtil.setHighlightText(queryResponse, "biddingId", "biddingRange",word,false);
+			/*BaseUtil.setHighlightText(queryResponse, "biddingId", "title",word,false);
+			BaseUtil.setHighlightText(queryResponse, "biddingId", "biddingRange",word,false);*/
+            if (!StringUtils.isBlank(announcementParam.getKeyword())){
+                BaseUtil.setHl(searchResult,announcementParam.getKeyword(),"title","biddingRange");
+            }
 			
 			resultMap.put("searchResult", BaseUtil.docListToVoList(searchResult, AnnouncementsVO.class));
 			resultMap.put("totalRecordNum", searchResult.getNumFound());

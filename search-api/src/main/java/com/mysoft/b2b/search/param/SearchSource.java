@@ -26,7 +26,7 @@ public enum SearchSource  {
 		return value;
 	}
 
-	private static final String[] descriptions = { "网站  ", "微信"};
+	private static final String[] descriptions = { "网站", "微信"};
 
 	public String getDescription() {
 		return descriptions[getValue()];

@@ -1,9 +1,9 @@
 package com.mysoft.b2b.search.api;
 
+import com.mysoft.b2b.search.param.SupplierParam;
+
 import java.util.List;
 import java.util.Map;
-
-import com.mysoft.b2b.search.param.SupplierParam;
 
 /**
  * 供应商搜索

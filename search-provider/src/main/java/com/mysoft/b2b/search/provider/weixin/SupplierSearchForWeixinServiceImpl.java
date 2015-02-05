@@ -16,6 +16,7 @@ import com.mysoft.b2b.search.util.BaseUtil;
 import com.mysoft.b2b.search.vo.SupplierVO;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.FacetField;
@@ -87,8 +88,8 @@ public class SupplierSearchForWeixinServiceImpl implements SupplierSearchForWeix
 			
 			Map<String, String[]> paramMap = new HashMap<String, String[]>();
 			paramMap.put("defType", new String []{"edismax"});
-			paramMap.put("qf", new String []{"companyName shortName businessScope qualificationLevelName projectLocation productName"});
-			paramMap.put("pf", new String []{"companyName shortName businessScope qualificationLevelName projectLocation productName"});
+			paramMap.put("qf", new String []{"companyName shortName businessScope qualificationLevelName projectLocation productName companyNameSearchField"});
+			paramMap.put("pf", new String []{"companyName shortName businessScope qualificationLevelName projectLocation productName companyNameSearchField"});
 			
 			SolrParams solrParams = new MultiMapSolrParams(paramMap);
 			dos.add(new SolrQueryBO().setSolrParams(solrParams));
@@ -96,26 +97,36 @@ public class SupplierSearchForWeixinServiceImpl implements SupplierSearchForWeix
 		}else{			
 			// 没有关键字，查询全部
 			dos.add(new SolrQueryBO().setfN("*").setfV("*").setQueryField(true));
-		}	
-		
-		// 省份查询
-		if (!StringUtils.isBlank(supplierParam.getProvince())) {
-			Region currentRegion = dictionaryService.getRegionByCode(supplierParam.getProvince());
-			if (currentRegion != null) {
-				String location = "china OR " + currentRegion.getCode();
-				dos.add(new SolrQueryBO().setFilterQueryField(true).setfN("projectLocationId").setfV("(" + location + ")"));
-				
-				// 根据地区打分排序
-				String bfStr = "if(exists(query({!v='projectLocationId:" + currentRegion.getCode() + "'})),sum(10,sortScore),if(exists(query({!v='projectLocationId:china'})),sum(5,scale(sortScore,0.01,0.99)),1))";
-				Map<String, String[]> paramMap = new HashMap<String, String[]>();
-				paramMap.put("defType", new String []{"edismax"});
-				paramMap.put("bf", new String []{bfStr});
-				
-				SolrParams solrParams = new MultiMapSolrParams(paramMap);
-				dos.add(new SolrQueryBO().setSolrParams(solrParams));
-				
-			}
-			
+		}
+
+        if (!StringUtils.isBlank(supplierParam.getLocation())) {
+            Region currentRegion = dictionaryService.getRegionByCode(supplierParam.getLocation());
+            String location = "china";
+            if (currentRegion != null) {
+                location += " OR " + currentRegion.getCode() +" OR "+currentRegion.getParentCode();
+            }
+            dos.add(new SolrQueryBO().setFilterQueryField(true).setfN("projectLocationId").setfV("(" + location + ")"));
+
+            // 根据地区打分排序
+            String bfStr = "";
+            if (currentRegion != null) {
+                if (!StringUtils.isBlank(currentRegion.getParentCode())) {
+                    bfStr = "if(exists(query({!v='projectLocationId:" + currentRegion.getCode() + "'})),sum(10,sortScore),if(exists(query({!v='projectLocationId:" + currentRegion.getParentCode() + "'})),sum(5,scale(sortScore,0.01,0.99)),if(exists(query({!v='projectLocationId:china'})),sum(1,scale(sortScore,0.01,0.99)),0.7)))";
+                }else{
+                    bfStr = "if(exists(query({!v='projectLocationId:" + currentRegion.getCode() + "'})),sum(10,sortScore),if(exists(query({!v='projectLocationId:china'})),sum(5,scale(sortScore,0.01,0.99)),1))";
+                }
+            }
+            // 选择全国
+            if("china".equals(supplierParam.getLocation())){
+                bfStr = "sum(0,sortScore)";
+            }
+            Map<String, String[]> paramMap = new HashMap<String, String[]>();
+            paramMap.put("defType", new String []{"edismax"});
+            paramMap.put("bf", new String []{bfStr});
+
+            SolrParams solrParams = new MultiMapSolrParams(paramMap);
+            dos.add(new SolrQueryBO().setSolrParams(solrParams));
+
 		}else{
             String scoreExpress = "_val_:\"sum(supplierSort(supplierId|string),supplierSort(sortScore|double))\"";
             dos.add(new SolrQueryBO().setCustomQueryStr(scoreExpress).setQueryField(true));
@@ -125,6 +136,19 @@ public class SupplierSearchForWeixinServiceImpl implements SupplierSearchForWeix
 		if (!StringUtils.isBlank(supplierParam.getCodelevel1())) {
 			dos.add(new SolrQueryBO().setFilterQueryField(true).setfN("operationCategoryCode1").setfV(supplierParam.getCodelevel1()));
 		}
+        // 三级分类code查询
+        if (!StringUtils.isBlank(supplierParam.getCodelevel3())) {
+            dos.add(new SolrQueryBO().setFilterQueryField(true).setfN("operationCategoryCode3").setfV(supplierParam.getCodelevel3()));
+        }
+        // 所在地查询
+        if (!StringUtils.isBlank(supplierParam.getRegisterLocation())) {
+            dos.add(new SolrQueryBO().setFilterQueryField(true).setfN("registerLocation").setfV(supplierParam.getRegisterLocation()));
+        }
+
+        // 注册资金(查询转换人民币汇率后)
+        if (!StringUtils.isBlank(supplierParam.getRegisteredcapital()) && NumberUtils.isNumber(supplierParam.getRegisteredcapital())) {
+            dos.add(new SolrQueryBO().setFilterQueryField(true).setfN("regCapitalExchange").setfV("[" + supplierParam.getRegisteredcapital() + " TO " + "*]"));
+        }
 				
 		try {
 			int rowNum = supplierParam.getRowNum();

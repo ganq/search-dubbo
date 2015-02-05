@@ -24,7 +24,10 @@ public class SupplierSearchForWeixinServiceTest extends BaseTestCase {
 		SupplierParam supplierParam = new SupplierParam();
 		//supplierParam.setKeyword("万");
 		//supplierParam.setProvince("222");
-		supplierParam.setArea("north");
+		//supplierParam.setArea("north");
+        //supplierParam.setRegisterLocation("222");
+        //supplierParam.setCodelevel3("601");
+        supplierParam.setRegisteredcapital("500000000");
 		long a1 = System.currentTimeMillis();
 		
 		Map<String, Object> searchResult = supplierSearchForWeixinService.getSupplierSearchResult(supplierParam);

@@ -72,9 +72,9 @@ public class DeveloperSearchServiceImpl implements DeveloperSearchService {
             }
 						
 			word  = "(" + StringUtils.join(analysisWords.toArray(), " ") + ")";
-			dos.add(new SolrQueryBO().setfN("developerName").setHighlightField(true));
+			/*dos.add(new SolrQueryBO().setfN("developerName").setHighlightField(true));
 			dos.add(new SolrQueryBO().setfN("regLocation").setHighlightField(true));
-			dos.add(new SolrQueryBO().setfN("projectInfo").setHighlightField(true));
+			dos.add(new SolrQueryBO().setfN("projectInfo").setHighlightField(true));*/
 						
 			
 			dos.add(new SolrQueryBO().setCustomQueryStr(word).setQueryField(true));
@@ -93,7 +93,7 @@ public class DeveloperSearchServiceImpl implements DeveloperSearchService {
 		
 		Map<String, String[]> paramMap = new HashMap<String, String[]>();
 		paramMap.put("defType", new String []{"edismax"});
-		paramMap.put("bf", new String []{"ord(biddingCount)"});
+		paramMap.put("bf", new String []{"sum(scale(biddingCount,0.01,0.1),recruitCount)"});
 		
 		SolrParams solrParams = new MultiMapSolrParams(paramMap);
 		dos.add(new SolrQueryBO().setSolrParams(solrParams));
@@ -107,9 +107,12 @@ public class DeveloperSearchServiceImpl implements DeveloperSearchService {
 			SolrDocumentList searchResult = queryResponse.getResults();				
 			
 			// 设置名称高亮
-			BaseUtil.setHighlightText(queryResponse, "developerId", "developerName",word,false);
+			/*BaseUtil.setHighlightText(queryResponse, "developerId", "developerName",word,false);
 			BaseUtil.setHighlightText(queryResponse, "developerId", "projectInfo",word,false);
-			BaseUtil.setHighlightText(queryResponse, "developerId", "regLocation",word,false);
+			BaseUtil.setHighlightText(queryResponse, "developerId", "regLocation",word,false);*/
+            if (!StringUtils.isBlank(developerParam.getKeyword())){
+                BaseUtil.setHl(searchResult,developerParam.getKeyword(),"developerName","projectInfo","regLocation");
+            }
 			
 			resultMap.put("searchResult", BaseUtil.docListToVoList(searchResult,DeveloperVO.class));
 			resultMap.put("totalRecordNum", searchResult.getNumFound());

@@ -5,6 +5,7 @@ import com.mysoft.b2b.bizsupport.api.OperationCategoryService.DataType;
 import com.mysoft.b2b.search.solr.SolrQueryBO;
 import com.mysoft.b2b.search.solr.SolrQueryEnhanced;
 import com.mysoft.b2b.search.vo.SearchCategoryVO;
+import com.mysoft.b2b.search.vo.SupplierVO;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -26,6 +27,7 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.MultiMapSolrParams;
 import org.apache.solr.common.params.SolrParams;
+import org.apache.solr.common.util.DateUtil;
 import org.apache.solr.common.util.NamedList;
 import org.springframework.util.CollectionUtils;
 
@@ -34,6 +36,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
+import java.text.ParseException;
 import java.util.*;
 
 public class BaseUtil {
@@ -44,8 +47,8 @@ public class BaseUtil {
 	 * solr文档集合转换成Vo集合
 	 */
 	public static <T> List<T> docListToVoList(SolrDocumentList solrDocumentList, Class<T> clz)
-			throws IllegalArgumentException, NoSuchMethodException, IllegalAccessException, InvocationTargetException,
-			ClassNotFoundException, InstantiationException {
+            throws IllegalArgumentException, NoSuchMethodException, IllegalAccessException, InvocationTargetException,
+            ClassNotFoundException, InstantiationException, ParseException {
 		List<T> list = new ArrayList<T>();
 
 		if (solrDocumentList == null || solrDocumentList.isEmpty()) {
@@ -62,7 +65,7 @@ public class BaseUtil {
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked"})
 	public static <T> T solrDocToVo(SolrDocument sd, Class<T> clz) throws NoSuchMethodException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException, ClassNotFoundException, InstantiationException {
+            IllegalArgumentException, InvocationTargetException, ClassNotFoundException, InstantiationException, ParseException {
 		T vo = (T) Class.forName(clz.getName()).newInstance();
 		// 获取实体类的所有属性，返回Field数组
 		Field[] fields = vo.getClass().getDeclaredFields();
@@ -75,11 +78,15 @@ public class BaseUtil {
 			Method setMethod = vo.getClass().getMethod("set" + UpperCaseField(name), field.getType());
 			String fieldType = field.getGenericType().toString();
 
+            
 			if (fieldType.equals("class java.lang.String")) {
 				setMethod.invoke(vo, ObjectUtils.toString(sd.getFieldValue(name)));
 			}
 			if (fieldType.equals("class java.util.Date")) {
-				setMethod.invoke(vo, (Date) sd.getFieldValue(name));
+				if (sd.getFieldValue(name) instanceof  Date) {
+                    setMethod.invoke(vo, (Date) sd.getFieldValue(name));
+                }
+
 			}
 			if (fieldType.equals("class java.lang.Integer")) {
 				setMethod.invoke(vo, NumberUtils.toInt(ObjectUtils.toString(sd.getFieldValue(name))));
@@ -97,7 +104,9 @@ public class BaseUtil {
 				setMethod.invoke(vo, NumberUtils.toDouble(ObjectUtils.toString(sd.getFieldValue(name))));
 			}
 			if (fieldType.equals("interface java.util.List")) {
-				setMethod.invoke(vo, (List) sd.getFieldValue(name));
+                if (sd.getFieldValue(name) instanceof List) {
+                    setMethod.invoke(vo, (List) sd.getFieldValue(name));
+                }
 			}
 
 		}
@@ -369,6 +378,58 @@ public class BaseUtil {
 			}
 		}
 	}
+
+    public static void setHl(SolrDocumentList searchResult,String keyword,String... fieldName){
+        if (searchResult == null || searchResult.isEmpty() ) {
+            return;
+        }
+
+        String hlPre = "<em class=\"search_highlight\">";
+        String hlPost = "</em>";
+        for (String field : fieldName){
+            for (SolrDocument solrDocument : searchResult){
+                Object docment = solrDocument.get(field);
+                if (docment instanceof List){
+                    solrDocument.setField(field, setListFieldHl(docment, hlPre, hlPost, keyword.toLowerCase().toCharArray()));
+                }else{
+                    solrDocument.setField(field,setStringFieldHl(docment,hlPre,hlPost,keyword.toLowerCase().toCharArray()));
+                }
+            }
+        }
+    }
+
+    private static String setStringFieldHl(Object string,String hlPre,String hlPost,char[] keyword){
+        if (string == null || StringUtils.isBlank(string.toString())){
+            return "";
+        }
+        String newStr = ObjectUtils.toString(string).trim();
+
+        HashSet keywordSet = new HashSet(CollectionUtils.arrayToList(keyword));
+        List<String> newStrList = new ArrayList<String>();
+        for (char c : newStr.toCharArray()){
+            if (keywordSet.contains(Character.toLowerCase(c))){
+                newStrList.add(hlPre + CharUtils.toString(c) + hlPost);
+            }else{
+                newStrList.add(CharUtils.toString(c));
+            }
+        }
+
+        return StringUtils.join(newStrList,"").replaceAll(hlPost + hlPre, "");
+    }
+    private static List setListFieldHl(Object list,String hlPre,String hlPost,char[] keyword){
+        List newDocment = new ArrayList();
+        if (list == null){
+            return newDocment;
+        }
+        List newList = (List)list;
+        if (CollectionUtils.isEmpty(newList)){
+            return newDocment;
+        }
+        for(Object str : newList){
+            newDocment.add(setStringFieldHl(str,hlPre,hlPost,keyword));
+        }
+        return newDocment;
+    }
 	
 	/**
 	 * 设置单字搜索时的高亮字段
@@ -407,7 +468,7 @@ public class BaseUtil {
 			int termsLimit) {
 		Map<String, String[]> nameChineseParamMap = new HashMap<String, String[]>();
 		nameChineseParamMap.put("terms.fl", new String[] { field });
-		nameChineseParamMap.put("terms.regex", new String[] { ".*" + StringUtils.join(CollectionUtils.arrayToList(keyword.toCharArray()),".*") + ".*" });
+		nameChineseParamMap.put("terms.regex", new String[] { ".*" +keyword + ".*" });
 		nameChineseParamMap.put("terms.limit", new String[] { termsLimit + "" });
 		SolrParams spNameChinese = new MultiMapSolrParams(nameChineseParamMap);
 		QueryRequest qrNameChinese = new QueryRequest(spNameChinese);
@@ -760,17 +821,11 @@ public class BaseUtil {
         return new SolrQueryBO().setSolrParams(solrParams);
     }
 
+
+
     public static void main(String[] args) {
-        List<String> hh = new ArrayList<String>();
-        hh.add("联");
-        hh.add("塑");
-        hh.add("门窗");
-        hh.add("工");
-        hh.add("艺");
-        hh.add("有限公司");
-        hh.add("的");
-        hh.add("斯蒂芬");
-        System.out.println(mergeAdjacentString(hh));
+       System.out.println(setStringFieldHl("深圳阿斯蒂芬sad奋斗sag公司","<em class=\"search_highlight\">","</em>","深圳sg".toCharArray()));
+char a = '我';
     }
 
 

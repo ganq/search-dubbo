@@ -18,6 +18,8 @@
         <field name="businessScope" type="text_mmseg4j_max_word" indexed="true" stored="true" termVectors="true"/>
         <!-- 默认荣誉-->
         <field name="defaultAward" type="string" indexed="true" stored="true" termVectors="true"/>
+        <!-- 荣誉数量-->
+        <field name="awardCount" type="int" indexed="true" stored="true" termVectors="true"/>
         <!-- 公司法人-->
         <field name="legalName" type="string" indexed="true" stored="true" termVectors="true"/>
         <!-- 成立年份-->
@@ -40,19 +42,12 @@
 
         <field name="searchField" type="text_mmseg4j_complex" indexed="true" stored="true" multiValued="true" termVectors="true"/>
 
-        <!-- 品牌列表-->
-        <field name="brandList" type="text_mmseg4j_max_word" indexed="true" stored="true" multiValued="true"/>
-        <!-- 品牌拥有方式列表-->
-        <field name="brandOwnTypeList" type="string" indexed="true" stored="true" multiValued="true"/>
-
         <!-- 资质code-->
         <field name="qualificationCode" type="string" indexed="true" stored="true" multiValued="true"/>
         <!-- 资质code和等级-->
         <field name="qualificationCode_Level" type="string" indexed="true" stored="true" multiValued="true"/>
         <!-- 资质和等级名称-->
         <field name="qualificationLevelName" type="text_mmseg4j_max_word" indexed="true" stored="true" multiValued="true"/>
-        <field name="qualificationLevelNameSuggest" type="string" indexed="true" stored="false" multiValued="true" />
-        <field name="qualificationLevelNamePinyin" type="string" indexed="true" stored="false" multiValued="true" />
         <dynamicField name="qualification_*" type="int" indexed="true" stored="true"/>
         <!-- 注册资本-->
         <field name="regCapital" type="int" indexed="true" stored="true" />
@@ -79,20 +74,19 @@
         <field name="productName" type="text_mmseg4j_max_word" indexed="true" stored="true" multiValued="true"/>
         <!-- 产品数量-->
         <field name="productCount" type="int" indexed="true" stored="true" />
-        <field name="productNameSuggest" type="string" indexed="true" stored="false" multiValued="true"/>
 
-        <field name="productNamePinyin" type="string" indexed="true" stored="false" multiValued="true" />
-
-        <!-- 认证 code-->
-        <field name="authenticationCode" type="string" indexed="true" stored="true" multiValued="true"/>
-        <!-- 认证 -->
-        <field name="authenticationName" type="string" indexed="true" stored="true" multiValued="true"/>
+        <!-- 注册所在地-->
+        <field name="registerLocation" type="string" indexed="true" stored="true" multiValued="true"/>
         <!-- 公司注册省-->
         <field name="regProvinceName" type="string" indexed="true" stored="true" />
         <!-- 公司注册城市-->
         <field name="regCityName" type="string" indexed="true" stored="true" />
         <!-- 公司注册详细地址-->
         <field name="regAddress" type="string" indexed="true" stored="true" />
+
+
+        <!-- 用户列表-->
+        <field name="userListJSON" type="string" indexed="true" stored="true" />
 
         <!-- 基础分类-->
         <field name="basicCategoryCode" type="string" indexed="true" stored="true" multiValued="true"/>
@@ -158,9 +152,6 @@
 
     <copyField source="companyName" dest="companyNameSuggest" />
     <copyField source="companyName" dest="companyNameSearchField" />
-
-    <copyField source="productName" dest="productNameSuggest" />
-    <copyField source="qualificationLevelName" dest="qualificationLevelNameSuggest" />
 
     <copyField source="companyName" dest="searchField" />
     <copyField source="shortName" dest="searchField" />

@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.mysoft.b2b.search</groupId>
 		<artifactId>search-parent</artifactId>
-		<version>2.5.0.alpha16</version>
+		<version>3.0.0.R7</version>
 	</parent>
 	<artifactId>search-scheduler</artifactId>
 	<packaging>jar</packaging>
@@ -28,25 +28,25 @@
 		<dependency>
 			<groupId>com.mysoft.b2b.search</groupId>
 			<artifactId>search-spi</artifactId>
-			<version>2.5.0.R4</version>
+			<version>3.0.0.R5</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.mysoft.b2b.bizparameter</groupId>
 			<artifactId>biz-parameter-api</artifactId>
-			<version>2.5.0.R1</version>
+			<version>3.0.0.R1</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.mysoft.b2b.commons</groupId>
 			<artifactId>b2b-commons-service-utils</artifactId>
-			<version>2.5.0.R1</version>
+			<version>3.0.0.R1</version>
 		</dependency>
 
         <dependency>
             <groupId>com.mysoft.b2b.basicsystem</groupId>
             <artifactId>sys-parameter-api</artifactId>
-            <version>2.5.0.R1</version>
+            <version>3.0.0.R1</version>
         </dependency>
 		
 		<!--application dependencies end -->

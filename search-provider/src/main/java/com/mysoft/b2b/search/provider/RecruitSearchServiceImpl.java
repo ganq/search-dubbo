@@ -85,8 +85,8 @@ public class RecruitSearchServiceImpl implements RecruitSearchService {
                 analysisWords.add(recruitParam.getKeyword());
             }
 			word  = "(" + StringUtils.join(analysisWords.toArray(), " ") + ")";
-			dos.add(new SolrQueryBO().setfN("subject").setHighlightField(true));
-			dos.add(new SolrQueryBO().setfN("registerCondition").setHighlightField(true));
+			/*dos.add(new SolrQueryBO().setfN("subject").setHighlightField(true));
+			dos.add(new SolrQueryBO().setfN("registerCondition").setHighlightField(true));*/
 			
 			
 			dos.add(new SolrQueryBO().setCustomQueryStr(word).setQueryField(true));
@@ -219,9 +219,11 @@ public class RecruitSearchServiceImpl implements RecruitSearchService {
 			}
 			
 			// 设置标题高亮
-			BaseUtil.setHighlightText(queryResponse, "recruitId", "subject",word,false);
-			BaseUtil.setHighlightText(queryResponse, "recruitId", "registerCondition",word,false);
-			
+			/*BaseUtil.setHighlightText(queryResponse, "recruitId", "subject",word,false);
+			BaseUtil.setHighlightText(queryResponse, "recruitId", "registerCondition",word,false);*/
+            if (!StringUtils.isBlank(recruitParam.getKeyword())){
+                BaseUtil.setHl(searchResult,recruitParam.getKeyword(),"subject","registerCondition");
+            }
 			resultMap.put("searchResult", BaseUtil.docListToVoList(searchResult, RecruitVO.class));
 			resultMap.put("totalRecordNum", searchResult.getNumFound());
 			
@@ -254,5 +256,83 @@ public class RecruitSearchServiceImpl implements RecruitSearchService {
 		return resultMap;
 	}
 
+    /**
+     * 通用搜索结果
+     *
+     * @param recruitParam
+     */
+    public List<RecruitVO> getCommonSearchResult(RecruitParam recruitParam) {
+
+        //dos 作为字段查询
+        List<SolrQueryBO> dos = new ArrayList<SolrQueryBO>();
+
+        // 从基础分类查
+        if (!StringUtils.isBlank(recruitParam.getCategorycode())) {
+            dos.add(new SolrQueryBO().setQueryField(true).setfN("searchBasicCategoryCode").setfV("(" + recruitParam.getCategorycode().replace(","," OR ") + ")"));
+        }
+
+        // 状态
+        if (!StringUtils.isBlank(recruitParam.getState())) {
+            String [] stateArray = recruitParam.getState().split(",");
+            for (int i=0;i<stateArray.length;i++) {
+                stateArray[i] = NumberUtils.toInt(stateArray[i]) + "";
+            }
+            dos.add(new SolrQueryBO().setFilterQueryField(true).setfN("state").setfV("("+StringUtils.join(stateArray," OR ")+")"));
+        }
+
+        // 点击报名截止时间排序
+        if (!StringUtils.isBlank(recruitParam.getSdatesort())) {
+            SolrQueryBO do7 = new SolrQueryBO();
+            do7.setSortField(true).setfN("registerEndDate");
+            if ("0".equals(recruitParam.getSdatesort())) {
+                do7.setSort(ORDER.asc);
+            }else{
+                do7.setSort(ORDER.desc);
+            }
+            dos.add(do7);
+        }
+
+        // 点击发布时间排序
+        if (!StringUtils.isBlank(recruitParam.getPdatesort())) {
+            SolrQueryBO do7 = new SolrQueryBO();
+            do7.setSortField(true).setfN("publishTime");
+            if ("0".equals(recruitParam.getPdatesort())) {
+                do7.setSort(ORDER.asc);
+            }else{
+                do7.setSort(ORDER.desc);
+            }
+            dos.add(do7);
+        }
+
+        dos.add(BaseUtil.setBiddingBfSortBo());
+
+        try {
+            QueryResponse queryResponse = BaseUtil.getQueryResponse(recruitSolr , dos, recruitParam.getRowNum(), recruitParam.getPageSize());
+
+            SolrDocumentList searchResult = queryResponse.getResults();
+            logger.info(MessageFormat.format("----------------本次搜索：搜索参数“{0}”,结果行数：“{1}”----------------", recruitParam,searchResult.getNumFound()));
+            return BaseUtil.docListToVoList(searchResult,RecruitVO.class);
+
+        } catch (NoSuchMethodException e) {
+            logger.error(LOG_MSG + "：NoSuchMethodException  ", e);
+        } catch (IllegalAccessException e) {
+            logger.error(LOG_MSG + "：IllegalAccessException  ", e);
+        } catch (InstantiationException e) {
+            logger.error(LOG_MSG + "：InstantiationException  ", e);
+        } catch (ClassNotFoundException e) {
+            logger.error(LOG_MSG + "：ClassNotFoundException  ", e);
+        } catch (InvocationTargetException e) {
+            logger.error(LOG_MSG + "：InvocationTargetException  ", e);
+        } catch (SolrServerException e) {
+            logger.error(LOG_MSG + "：SolrServerException  ", e);
+        }catch (Exception e) {
+            logger.error(LOG_MSG + "错误", e);
+        }
+        return Collections.<RecruitVO>emptyList();
+
+    }
+
 }
+
+
 

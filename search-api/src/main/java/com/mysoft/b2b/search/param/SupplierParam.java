@@ -20,6 +20,8 @@ public class SupplierParam extends BaseParam implements Serializable {
 		super.setSearchSource(SearchSource.WEBSITE);
 	}
 
+    private String registerLocation;
+
 	/**
 	 * 注册资本
 	 */
@@ -128,11 +130,26 @@ public class SupplierParam extends BaseParam implements Serializable {
 		this.area = area;
 	}
 
-	@Override
-	public String toString() {
-		return "SupplierParam [registeredcapital=" + registeredcapital + ", year=" + year + ", qualification="
-				+ qualification + ", qualificationLevel=" + qualificationLevel + ", regsort=" + regsort + ", yearsort="
-				+ yearsort + ", province=" + province + ", area=" + area + ", toString()=" + super.toString() + "]";
-	}
+    public String getRegisterLocation() {
+        return registerLocation;
+    }
 
+    public void setRegisterLocation(String registerLocation) {
+        this.registerLocation = registerLocation;
+    }
+
+    @Override
+    public String toString() {
+        return "SupplierParam{" +
+                "registerLocation='" + registerLocation + '\'' +
+                ", registeredcapital='" + registeredcapital + '\'' +
+                ", year='" + year + '\'' +
+                ", qualification='" + qualification + '\'' +
+                ", qualificationLevel='" + qualificationLevel + '\'' +
+                ", regsort='" + regsort + '\'' +
+                ", yearsort='" + yearsort + '\'' +
+                ", province='" + province + '\'' +
+                ", area='" + area + '\'' +
+                "} " + super.toString();
+    }
 }

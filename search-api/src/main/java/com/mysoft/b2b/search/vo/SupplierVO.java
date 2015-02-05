@@ -2,6 +2,7 @@ package com.mysoft.b2b.search.vo;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 供应商信息VO。
@@ -61,11 +62,6 @@ public class SupplierVO implements Serializable {
 	private Integer awardBidCount; 
 
 	/**
-	 * 品牌拥有方式列表
-	 */
-	private List brandOwnTypeList;
-	
-	/**
 	 * 资质等级名称
 	 */
 	private List qualificationLevelName;
@@ -81,11 +77,6 @@ public class SupplierVO implements Serializable {
 	private List projectArea;
 	
 	private List basicCategoryName;
-	
-	/**
-	 * 认证
-	 */
-	private List authenticationName;
 	
 	/**
 	 * 注册所在省
@@ -140,6 +131,11 @@ public class SupplierVO implements Serializable {
 	 * 默认荣誉
 	 */
 	private String defaultAward;
+
+    /**
+     * 荣誉数量
+     */
+    private Integer awardCount;
 	
 	/**
 	 * 项目案例名称
@@ -159,9 +155,10 @@ public class SupplierVO implements Serializable {
 	 * 产品数量
 	 */
 	private Integer productCount;
-	
-	/**
+
+    /**
 	 * 公司法人
+
 	 */
 	private String legalName;
 	
@@ -180,7 +177,25 @@ public class SupplierVO implements Serializable {
 	 */
 	private List endorsementList;
 
-	public String getSupplierId() {
+    /**
+     * 用户信息JSON
+     */
+    private String userListJSON;
+
+    /**
+     * 用户信息（界面展示用）
+     */
+    private List<Map> userListDisplay;
+
+    public List<Map> getUserListDisplay() {
+        return userListDisplay;
+    }
+
+    public void setUserListDisplay(List<Map> userListDisplay) {
+        this.userListDisplay = userListDisplay;
+    }
+
+    public String getSupplierId() {
 		return supplierId;
 	}
 
@@ -252,14 +267,6 @@ public class SupplierVO implements Serializable {
 		this.awardBidCount = awardBidCount;
 	}
 
-	public List getBrandOwnTypeList() {
-		return brandOwnTypeList;
-	}
-
-	public void setBrandOwnTypeList(List brandOwnTypeList) {
-		this.brandOwnTypeList = brandOwnTypeList;
-	}
-
 	public List getQualificationLevelName() {
 		return qualificationLevelName;
 	}
@@ -274,14 +281,6 @@ public class SupplierVO implements Serializable {
 
 	public void setProjectLocation(List projectLocation) {
 		this.projectLocation = projectLocation;
-	}
-
-	public List getAuthenticationName() {
-		return authenticationName;
-	}
-
-	public void setAuthenticationName(List authenticationName) {
-		this.authenticationName = authenticationName;
 	}
 
 	public String getRegProvinceName() {
@@ -461,22 +460,61 @@ public class SupplierVO implements Serializable {
 		this.endorsementList = endorsementList;
 	}
 
-	@Override
-	public String toString() {
-		return "SupplierVO [supplierId=" + supplierId + ", companyName=" + companyName + ", supplierUrl=" + supplierUrl
-				+ ", shortName=" + shortName + ", followCount=" + followCount + ", establishYear=" + establishYear
-				+ ", inStorageCount=" + inStorageCount + ", loginCount=" + loginCount + ", dataCount=" + dataCount
-				+ ", awardBidCount=" + awardBidCount + ", brandOwnTypeList=" + brandOwnTypeList
-				+ ", qualificationLevelName=" + qualificationLevelName + ", projectLocation=" + projectLocation
-				+ ", projectArea=" + projectArea + ", basicCategoryName=" + basicCategoryName + ", authenticationName="
-				+ authenticationName + ", regProvinceName=" + regProvinceName + ", regCityName=" + regCityName
-				+ ", regAddress=" + regAddress + ", serviceAreaName=" + serviceAreaName + ", regCapital=" + regCapital
-				+ ", authTag=" + authTag + ", currency=" + currency + ", medalLevel=" + medalLevel + ", supplierType="
-				+ supplierType + ", businessScope=" + businessScope + ", defaultAward=" + defaultAward
-				+ ", projectName=" + projectName + ", projectCount=" + projectCount + ", productName=" + productName
-				+ ", productCount=" + productCount + ", legalName=" + legalName + ", sortScore=" + sortScore
-				+ ", searchBasicCategoryName=" + searchBasicCategoryName + ", endorsementList=" + endorsementList + "]";
-	}
-	
-	
+    public Integer getAwardCount() {
+        return awardCount;
+    }
+
+    public void setAwardCount(Integer awardCount) {
+        this.awardCount = awardCount;
+    }
+
+    public String getUserListJSON() {
+        return userListJSON;
+    }
+
+    public void setUserListJSON(String userListJSON) {
+        this.userListJSON = userListJSON;
+    }
+
+    @Override
+    public String toString() {
+        return "SupplierVO{" +
+                "supplierId='" + supplierId + '\'' +
+                ", companyName='" + companyName + '\'' +
+                ", supplierUrl='" + supplierUrl + '\'' +
+                ", shortName='" + shortName + '\'' +
+                ", followCount=" + followCount +
+                ", establishYear=" + establishYear +
+                ", inStorageCount=" + inStorageCount +
+                ", loginCount=" + loginCount +
+                ", dataCount=" + dataCount +
+                ", awardBidCount=" + awardBidCount +
+                ", qualificationLevelName=" + qualificationLevelName +
+                ", projectLocation=" + projectLocation +
+                ", projectArea=" + projectArea +
+                ", basicCategoryName=" + basicCategoryName +
+                ", regProvinceName='" + regProvinceName + '\'' +
+                ", regCityName='" + regCityName + '\'' +
+                ", regAddress='" + regAddress + '\'' +
+                ", serviceAreaName=" + serviceAreaName +
+                ", regCapital=" + regCapital +
+                ", authTag=" + authTag +
+                ", currency='" + currency + '\'' +
+                ", medalLevel=" + medalLevel +
+                ", supplierType='" + supplierType + '\'' +
+                ", businessScope='" + businessScope + '\'' +
+                ", defaultAward='" + defaultAward + '\'' +
+                ", awardCount=" + awardCount +
+                ", projectName=" + projectName +
+                ", projectCount=" + projectCount +
+                ", productName=" + productName +
+                ", productCount=" + productCount +
+                ", legalName='" + legalName + '\'' +
+                ", sortScore=" + sortScore +
+                ", searchBasicCategoryName=" + searchBasicCategoryName +
+                ", endorsementList=" + endorsementList +
+                ", userListJSON='" + userListJSON + '\'' +
+                ", userListDisplay=" + userListDisplay +
+                '}';
+    }
 }

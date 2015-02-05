@@ -40,7 +40,7 @@ public enum SearchModule  {
 		return value;
 	}
 
-	private static final String[] descriptions = { "招标预告 ", "供应商", "开发商","招募"};
+	private static final String[] descriptions = { "招标预告", "供应商", "开发商","招募"};
 
 	public String getDescription() {
 		return descriptions[getValue()];

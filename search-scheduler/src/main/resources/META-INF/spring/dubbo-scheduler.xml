@@ -21,28 +21,28 @@
 		</property>
 	</bean>
 
-	<bean id="biddingScheduler" class="com.mysoft.b2b.search.scheduler.BiddingScheduler">
+	<bean id="biddingScheduler" class="com.mysoft.b2b.search.scheduler.BiddingScheduler" init-method="init">
 		<property name="jobName" value="招标预告"></property>
 		<property name="cronExpression">
 			<value>${bidding.cronexpression}</value>
 		</property>
 	</bean>
  
-	<bean id="supplierScheduler" class="com.mysoft.b2b.search.scheduler.SupplierScheduler">
+	<bean id="supplierScheduler" class="com.mysoft.b2b.search.scheduler.SupplierScheduler" init-method="init">
 		<property name="jobName" value="供应商"></property>
 		<property name="cronExpression">
 			<value>${supplier.cronexpression}</value>
 		</property>
 	</bean>
 
-	<bean id="developerScheduler" class="com.mysoft.b2b.search.scheduler.DeveloperScheduler">
+	<bean id="developerScheduler" class="com.mysoft.b2b.search.scheduler.DeveloperScheduler" init-method="init">
 		<property name="jobName" value="开发商"></property>
 		<property name="cronExpression">
 			<value>${developer.cronexpression}</value>
 		</property>
 	</bean>
 
-    <bean id="recruitScheduler" class="com.mysoft.b2b.search.scheduler.RecruitScheduler">
+    <bean id="recruitScheduler" class="com.mysoft.b2b.search.scheduler.RecruitScheduler" init-method="init">
         <property name="jobName" value="招募"></property>
         <property name="cronExpression">
             <value>${recruit.cronexpression}</value>

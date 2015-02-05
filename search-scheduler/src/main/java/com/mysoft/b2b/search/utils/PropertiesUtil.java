@@ -86,53 +86,69 @@ public class PropertiesUtil {
     /**
 	 * solr 配置文件位置
 	 */
-	private static final String FILE_PATH = "/solr.properties";
-	
-	private static final Logger logger = Logger.getLogger(PropertiesUtil.class);
+	private static final String SOLR_PROPERTIES = "/solr.properties";
+    /**
+     * solr date配置文件位置
+     */
+    private static final String SOLR_LAST_MODIFY_DATE_PROPERTIES = "/solr_last_modify_date.properties";
 
-	public static Properties prop = new Properties();
+    private static final Logger logger = Logger.getLogger(PropertiesUtil.class);
 
-	/**
+	public static Properties solrProp = new Properties();
+    public static Properties solrDateProp = new Properties();
+
+
+    /**
 	 * 当前是否debug状态
 	 */
 	public static boolean isDebug = false;
 	static {
-		InputStream fis = null;
-		try {
-			fis = PropertiesUtil.class.getResourceAsStream(FILE_PATH);
-			prop.load(fis);
-		} catch (IOException e) {
-            logger.info("Not Found properties fil path: [" + FILE_PATH + "]",e);
-        } catch (Exception e) {
-            logger.info("load this path: [" + FILE_PATH + "] error" ,e);
-        } finally {
-			// close fis
-			if (fis != null) {
-				try {
-					fis.close();
-				} catch (IOException e) {
-					logger.info(e.getMessage());
-				}
-			}
-		}
-	}
+        initProperties(SOLR_PROPERTIES,solrProp);
+        initProperties(SOLR_LAST_MODIFY_DATE_PROPERTIES,solrDateProp);
+    }
+
+    /**
+     * 初始化properties
+     * @param filePath
+     * @param prop
+     */
+   static void initProperties(String filePath,Properties prop){
+       InputStream fis = null;
+       try {
+           fis = PropertiesUtil.class.getResourceAsStream(filePath);
+           prop.load(fis);
+
+       } catch (IOException e) {
+           logger.info("Not Found properties fil path: [" + filePath + "]",e);
+       } catch (Exception e) {
+           logger.info("load this path: [" + filePath + "] error" ,e);
+       } finally {
+           if (fis != null) {
+               try {
+                   fis.close();
+               } catch (IOException e) {
+                   logger.info(e.getMessage());
+               }
+           }
+       }
+   }
 
 	/**
 	 * 根据key获取Value
 	 */
-	public static String getKey(String key) {
+	public static String getKey(Properties prop, String key) {
 		return prop.getProperty(key, "");
 	}
 
-	/**
+    /**
 	 * 更新key的Value
 	 */
-	public static void setKey(String key, String value) {
+	public static void setSolrDateKey(String key, String value) {
 		OutputStream fos = null;
 		try {
-			fos = new FileOutputStream(PropertiesUtil.class.getResource(FILE_PATH).getFile());
-			prop.setProperty(key, value);
-			prop.store(fos, "update solr import time");
+			fos = new FileOutputStream(PropertiesUtil.class.getResource(SOLR_LAST_MODIFY_DATE_PROPERTIES).getFile());
+			solrDateProp.setProperty(key, value);
+            solrDateProp.store(fos, "update solr import time");
 		} catch (IOException e) {
 			logger.info("update key: " + key + " and value :" + value + " error ,msg:" + e.getMessage());
 		} finally {
@@ -148,7 +164,8 @@ public class PropertiesUtil {
 	}
 
 	public static void main(String[] args) {
-		setKey(SOLR_CORE_ANNOUNCEMENTS_LAST_MODIFY_DATE, new Date().getTime() + "");
-		System.out.println(getKey(SOLR_CORE_ANNOUNCEMENTS_LAST_MODIFY_DATE));
+
+        setSolrDateKey(SOLR_CORE_ANNOUNCEMENTS_LAST_MODIFY_DATE, new Date().getTime() + "");
+		System.out.println(getKey(PropertiesUtil.solrDateProp,SOLR_CORE_ANNOUNCEMENTS_LAST_MODIFY_DATE));
 	}
 }

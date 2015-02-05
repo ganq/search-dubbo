@@ -89,8 +89,34 @@ public class DeveloperVO implements Serializable {
 	 * 项目数量
 	 */
 	private int projectCount;
-	
-	public String getShortName() {
+
+    /**
+     * 开发商正式签约
+     */
+    private boolean authorize;
+
+    /**
+     * 已招募数量
+     */
+    private Integer recruitCount;
+
+    public boolean isAuthorize() {
+        return authorize;
+    }
+
+    public void setAuthorize(boolean authorize) {
+        this.authorize = authorize;
+    }
+
+    public Integer getRecruitCount() {
+        return recruitCount;
+    }
+
+    public void setRecruitCount(Integer recruitCount) {
+        this.recruitCount = recruitCount;
+    }
+
+    public String getShortName() {
 		return shortName;
 	}
 
@@ -222,16 +248,27 @@ public class DeveloperVO implements Serializable {
 		this.biddingHistoryCount = biddingHistoryCount;
 	}
 
-	@Override
-	public String toString() {
-		return "DeveloperVO [developerId=" + developerId + ", developerName=" + developerName + ", developerUrl="
-				+ developerUrl + ", companyLogo=" + companyLogo + ", developerIntro=" + developerIntro + ", shortName="
-				+ shortName + ", biddingCount=" + biddingCount + ", biddingHistoryCount=" + biddingHistoryCount
-				+ ", regProvinceName=" + regProvinceName + ", regProvinceCode=" + regProvinceCode + ", regCityName="
-				+ regCityName + ", regCityCode=" + regCityCode + ", regLocation=" + regLocation + ", regAddress="
-				+ regAddress + ", projectInfo=" + projectInfo + ", projectCount=" + projectCount + "]";
-	}
-
-	
-	
+    @Override
+    public String toString() {
+        return "DeveloperVO{" +
+                "developerId='" + developerId + '\'' +
+                ", developerName='" + developerName + '\'' +
+                ", developerUrl='" + developerUrl + '\'' +
+                ", companyLogo='" + companyLogo + '\'' +
+                ", developerIntro='" + developerIntro + '\'' +
+                ", shortName='" + shortName + '\'' +
+                ", biddingCount=" + biddingCount +
+                ", biddingHistoryCount=" + biddingHistoryCount +
+                ", regProvinceName='" + regProvinceName + '\'' +
+                ", regProvinceCode='" + regProvinceCode + '\'' +
+                ", regCityName='" + regCityName + '\'' +
+                ", regCityCode='" + regCityCode + '\'' +
+                ", regLocation='" + regLocation + '\'' +
+                ", regAddress='" + regAddress + '\'' +
+                ", projectInfo='" + projectInfo + '\'' +
+                ", projectCount=" + projectCount +
+                ", authorize=" + authorize +
+                ", recruitCount=" + recruitCount +
+                '}';
+    }
 }

@@ -498,25 +498,54 @@ public class AnnouncementsVO implements Serializable {
 	public void setScServiceAreaName(List scServiceAreaName) {
 		this.scServiceAreaName = scServiceAreaName;
 	}
-	@Override
-	public String toString() {
-		return "AnnouncementsVO [uid=" + uid + ", biddingId=" + biddingId + ", developerId=" + developerId
-				+ ", developerName=" + developerName + ", developerLogo=" + developerLogo + ", developerShortName="
-				+ developerShortName + ", title=" + title + ", shortTitle=" + shortTitle + ", detail=" + detail
-				+ ", basicCategoryName=" + basicCategoryName + ", operationCategoryName=" + operationCategoryName
-				+ ", procurementType=" + procurementType + ", expectPublishFileBeginDate=" + expectPublishFileBeginDate
-				+ ", expectPublishFileEndDate=" + expectPublishFileEndDate + ", biddingOwer=" + biddingOwer
-				+ ", mobile=" + mobile + ", tel=" + tel + ", email=" + email + ", registerEndDate=" + registerEndDate
-				+ ", projectProvince=" + projectProvince + ", projectCity=" + projectCity + ", createTime="
-				+ createTime + ", publishTime=" + publishTime + ", isValid=" + isValid + ", state=" + state
-				+ ", deposit=" + deposit + ", projectName=" + projectName + ", biddingCompany=" + biddingCompany
-				+ ", scCategoryCode=" + scCategoryCode + ", scCategoryName=" + scCategoryName + ", scServiceAreaCode="
-				+ scServiceAreaCode + ", scServiceAreaName=" + scServiceAreaName + ", scRegCapital=" + scRegCapital
-				+ ", scQualificationCode=" + scQualificationCode + ", scQualificationName=" + scQualificationName
-				+ ", scBuildYears=" + scBuildYears + ", scCaseNum=" + scCaseNum + ", scIsLimitServiceAreaCase="
-				+ scIsLimitServiceAreaCase + ", biddingRange=" + biddingRange + ", projectType=" + projectType
-				+ ", projectImage=" + projectImage + ", projectArea=" + projectArea + ", projectTotArea="
-				+ projectTotArea + ", registerCount=" + registerCount + "]";
-	}
-		
+
+    @Override
+    public String toString() {
+        return "AnnouncementsVO{" +
+                "uid='" + uid + '\'' +
+                ", biddingId='" + biddingId + '\'' +
+                ", developerId='" + developerId + '\'' +
+                ", developerName='" + developerName + '\'' +
+                ", developerLogo='" + developerLogo + '\'' +
+                ", developerShortName='" + developerShortName + '\'' +
+                ", title='" + title + '\'' +
+                ", shortTitle='" + shortTitle + '\'' +
+                ", detail='" + detail + '\'' +
+                ", basicCategoryName=" + basicCategoryName +
+                ", operationCategoryName=" + operationCategoryName +
+                ", procurementType='" + procurementType + '\'' +
+                ", expectPublishFileBeginDate=" + expectPublishFileBeginDate +
+                ", expectPublishFileEndDate=" + expectPublishFileEndDate +
+                ", biddingOwer='" + biddingOwer + '\'' +
+                ", mobile='" + mobile + '\'' +
+                ", tel='" + tel + '\'' +
+                ", email='" + email + '\'' +
+                ", registerEndDate=" + registerEndDate +
+                ", projectProvince='" + projectProvince + '\'' +
+                ", projectCity='" + projectCity + '\'' +
+                ", createTime=" + createTime +
+                ", publishTime=" + publishTime +
+                ", isValid=" + isValid +
+                ", state=" + state +
+                ", deposit=" + deposit +
+                ", projectName='" + projectName + '\'' +
+                ", biddingCompany='" + biddingCompany + '\'' +
+                ", scCategoryCode=" + scCategoryCode +
+                ", scCategoryName=" + scCategoryName +
+                ", scServiceAreaCode=" + scServiceAreaCode +
+                ", scServiceAreaName=" + scServiceAreaName +
+                ", scRegCapital=" + scRegCapital +
+                ", scQualificationCode=" + scQualificationCode +
+                ", scQualificationName=" + scQualificationName +
+                ", scBuildYears=" + scBuildYears +
+                ", scCaseNum=" + scCaseNum +
+                ", scIsLimitServiceAreaCase=" + scIsLimitServiceAreaCase +
+                ", biddingRange='" + biddingRange + '\'' +
+                ", projectType='" + projectType + '\'' +
+                ", projectImage='" + projectImage + '\'' +
+                ", projectArea=" + projectArea +
+                ", projectTotArea=" + projectTotArea +
+                ", registerCount=" + registerCount +
+                '}';
+    }
 }

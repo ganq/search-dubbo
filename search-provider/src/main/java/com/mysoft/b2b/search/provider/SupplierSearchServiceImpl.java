@@ -1,5 +1,6 @@
 package com.mysoft.b2b.search.provider;
 
+import com.alibaba.fastjson.JSON;
 import com.mysoft.b2b.basicsystem.settings.api.DictionaryService;
 import com.mysoft.b2b.basicsystem.settings.api.Region;
 import com.mysoft.b2b.bizsupport.api.*;
@@ -108,9 +109,10 @@ public class SupplierSearchServiceImpl implements SupplierSearchService {
 			word  = "(" + StringUtils.join(analysisWords.toArray(), " AND ") + ")";
 			dos.add(new SolrQueryBO().setfN("companyName").setHighlightField(true));
 			dos.add(new SolrQueryBO().setfN("businessScope").setHighlightField(true));
-			dos.add(new SolrQueryBO().setfN("qualificationLevelName").setHighlightField(true).setHighlightPreserveMulti(true));
-			dos.add(new SolrQueryBO().setfN("projectLocation").setHighlightField(true).setHighlightPreserveMulti(true));
-			dos.add(new SolrQueryBO().setfN("productName").setHighlightField(true).setHighlightPreserveMulti(true));
+			//dos.add(new SolrQueryBO().setfN("qualificationLevelName").setHighlightField(true).setHighlightPreserveMulti(true));
+            //dos.add(new SolrQueryBO().setfN("productName").setHighlightField(true).setHighlightPreserveMulti(true));
+            dos.add(new SolrQueryBO().setfN("projectLocation").setHighlightField(true).setHighlightPreserveMulti(true));
+
 			
 						
 			dos.add(new SolrQueryBO().setCustomQueryStr(word).setQueryField(true));
@@ -320,14 +322,17 @@ public class SupplierSearchServiceImpl implements SupplierSearchService {
 			}
 			
 			// 设置名称高亮
-			BaseUtil.setHighlightText(queryResponse, "supplierId", "companyName",word, false);
+			/*BaseUtil.setHighlightText(queryResponse, "supplierId", "companyName",word, false);
 			BaseUtil.setHighlightText(queryResponse, "supplierId", "businessScope",word,false);
-			BaseUtil.setHighlightText(queryResponse, "supplierId", "qualificationLevelName",word,true);
-			BaseUtil.setHighlightText(queryResponse, "supplierId", "projectLocation",word,true);
-			BaseUtil.setHighlightText(queryResponse, "supplierId", "productName",word,true);
-			
-			resultMap.put("searchResult", BaseUtil.docListToVoList(searchResult,SupplierVO.class));
+            BaseUtil.setHighlightText(queryResponse, "supplierId", "projectLocation",word,true);*/
+
+            if (!StringUtils.isBlank(supplierParam.getKeyword())){
+                BaseUtil.setHl(searchResult,supplierParam.getKeyword(),"companyName","businessScope","projectLocation");
+            }
+			resultMap.put("searchResult", setUserListDisplay(BaseUtil.docListToVoList(searchResult,SupplierVO.class)));
 			resultMap.put("totalRecordNum", searchResult.getNumFound());
+
+
 			
 			//搜索记录小于一页推荐 相近词
 			if (searchResult.getNumFound() < pageSize && "1".equals(supplierParam.getPage())) {
@@ -360,9 +365,24 @@ public class SupplierSearchServiceImpl implements SupplierSearchService {
             logger.error(LOG_MSG + "：SolrServerException  ", e);
         }catch (Exception e) {
             logger.error(LOG_MSG + "错误", e);
+            e.printStackTrace();
         }
 		return resultMap;
 	}
+
+    // 将json串解析成用户对象
+    private List<SupplierVO> setUserListDisplay(List<SupplierVO> supplierVOs){
+        if (CollectionUtils.isEmpty(supplierVOs)){
+            return null;
+        }
+        for (SupplierVO supplierVO : supplierVOs){
+            if (StringUtils.isBlank(supplierVO.getUserListJSON())){
+                continue;
+            }
+            supplierVO.setUserListDisplay(JSON.parseArray(supplierVO.getUserListJSON(),Map.class));
+        }
+        return supplierVOs;
+    }
 
 	//得到所有正向子串
 	private Set<String> getAllSubstr(String keyword){

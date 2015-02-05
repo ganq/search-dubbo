@@ -18,8 +18,13 @@
         <field name="developerIntro" type="string" indexed="true" stored="true" termVectors="true"/>
         <!-- 正在招标数量-->
         <field name="biddingCount" type="int" indexed="true" stored="true" termVectors="true"/>
+        <!-- 正在招募数量-->
+        <field name="recruitCount" type="int" indexed="true" stored="true" termVectors="true"/>
+
         <!-- 历史招标数量-->
         <field name="biddingHistoryCount" type="int" indexed="true" stored="true" termVectors="true"/>
+        <!-- 是否开发商授权-->
+        <field name="authorize" type="boolean" indexed="true" stored="true" termVectors="true"/>
 
         <!-- 公司所在地省份 -->
         <field name="regProvinceName" type="string" indexed="true" stored="true" />

@@ -3,8 +3,10 @@ package com.mysoft.b2b.search.scheduler.helper;
 import com.mysoft.b2b.bizsupport.api.*;
 import com.mysoft.b2b.bizsupport.api.OperationCategoryService.DataType;
 import com.mysoft.b2b.search.spi.SearchModel;
+import com.mysoft.b2b.search.spi.supplier.SupplierScoreItem;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
@@ -14,6 +16,7 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -35,6 +38,57 @@ public class SearchHelper {
 	
 	@Autowired
 	private CategoryDataComponent categoryDataComponent;
+
+    @Autowired
+    private JdbcTemplate jdbcSearch;
+
+    private List<Map<String,Object>> scoreList;
+
+    private void fillSortScore(){
+        String sql = "select * from supplier_sort_score_item";
+        scoreList = jdbcSearch.queryForList(sql);
+    }
+
+    /**
+     * 获取供应商的排序分值
+     */
+    public double getSupplierSortScore(SupplierScoreItem supplierScoreItem ){
+        double totalScore = 0.0d;
+        if (supplierScoreItem == null){
+            logger.info("-------供应商得分对象为null,返回0分");
+            return totalScore;
+        }
+
+        fillSortScore();
+
+        for (Map<String,Object> map : scoreList){
+            // 得分项目名称
+            String scoreItemName = ObjectUtils.toString(map.get("item"));
+            // 该项目单项得分
+            Integer score = NumberUtils.toInt(ObjectUtils.toString(map.get("score")));
+            // 该项目单项最大分值
+            Integer maxScore = NumberUtils.toInt(ObjectUtils.toString(map.get("max_score")));
+            // 该项得分基数 (即相乘基数)
+            Integer scoreBase = 0;
+            try {
+                scoreBase = NumberUtils.toInt(ObjectUtils.toString(supplierScoreItem.getItemMap().get(scoreItemName)));
+            } catch (Exception e) {
+                logger.info("-------获取得分基数失败----");
+                e.printStackTrace();
+            }
+
+            if (score > 0 && scoreBase > 0){
+                Integer temp = score * scoreBase;
+                if (temp > maxScore){
+                    temp = maxScore;
+                }
+                totalScore += temp;
+            }
+        }
+        // 最后加上一个0 - 1之间的随机小数，用于打分相等的供应商之间随机展示，打分不等的供应商不影响
+        totalScore += NumberUtils.toDouble(String.format("%.2f", new Random().nextDouble()));
+        return totalScore;
+    }
 
     /**
      * 修改document字段的类型为Set
@@ -223,22 +277,89 @@ public class SearchHelper {
 	 */
 	private Map<String,Object> mergeCategoryMap(Map<String, Object> oldMap, Map<String, Object> newMap){
 		Map<String,Object> resultMap = new HashMap<String, Object>();
-		
-		for (String key : oldMap.keySet()) {
+
+		for (Map.Entry<String,Object> entry : oldMap.entrySet()) {
 			
-			Set<String> oldSet = (Set<String>)oldMap.get(key);
-			Set<String> newSet = (Set<String>)newMap.get(key);
-					
-			Set<String> resultSet = new HashSet<String>();
-			resultSet.addAll(oldSet);
-			resultSet.addAll(newSet);
-			
-			resultMap.put(key, resultSet);
+            Set<String> oldSet = (Set<String>)entry.getValue();
+            Set<String> newSet = (Set<String>)newMap.get(entry.getKey());
+
+            Set<String> resultSet = new HashSet<String>();
+            if (!CollectionUtils.isEmpty(oldSet)) {
+                resultSet.addAll(oldSet);
+            }
+            if (!CollectionUtils.isEmpty(newSet)) {
+                resultSet.addAll(newSet);
+            }
+			resultMap.put(entry.getKey(), resultSet);
 		}
 		
 		return resultMap;
 	}
-	
+
+    /**
+     * 获取基础分类的运营分类
+     * @param basicCategoryCodes
+     * @param dataType
+     * @return
+     */
+    public Map<String, Object> getOperationCategoryCodes(Set<String> basicCategoryCodes,DataType dataType){
+        Iterator<String> bCodesIterator =  basicCategoryCodes.iterator();
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        while (bCodesIterator.hasNext()){
+            String code = bCodesIterator.next();
+            if (resultMap.isEmpty()) {
+                resultMap = getOperationCategoryCodeByBasicCode(code, dataType);
+            }else{
+                Map<String, Object> newMap = getOperationCategoryCodeByBasicCode(code, dataType);
+                resultMap = mergeCategoryMap(resultMap,newMap);
+            }
+        }
+        return  resultMap;
+    }
+
+    private Map<String, Object> getOperationCategoryCodeByBasicCode(String basicCategoryCode,DataType dataType){
+        List<BasicCategory> categories = null;
+
+        if (DataType.BID == dataType) {
+            categories = categoryDataComponent.getBidOperationLastLevelCategories();
+
+        }
+        if (DataType.SUPPLIER == dataType) {
+            categories = categoryDataComponent.getSupplierOperationLastLevelCategories();
+        }
+        String operationCategoryCode = "";
+        List<String> basicIds;
+        BidOperationCategory bidOperationCategory;
+        SupplierOperationCategory supplierOperationCategory;
+        for (BasicCategory basicCategory : categories ) {
+            basicIds = new ArrayList<String>();
+            if (DataType.BID == dataType) {
+                bidOperationCategory = (BidOperationCategory)basicCategory;
+                basicIds = bidOperationCategory.getBindBasicCategoryIds();
+                if (CollectionUtils.isEmpty(basicIds)) {
+                    continue;
+                }
+            }
+            if (DataType.SUPPLIER == dataType) {
+                supplierOperationCategory = (SupplierOperationCategory)basicCategory;
+                basicIds = supplierOperationCategory.getBindBasicCategoryIds();
+                if (CollectionUtils.isEmpty(basicIds)) {
+                    continue;
+                }
+            }
+            if (basicIds.contains(basicCategoryCode)){
+                operationCategoryCode = basicCategory.getCategoryCode();
+                break;
+            }
+        }
+        if (StringUtils.isBlank(operationCategoryCode)){
+            return new HashMap<String, Object>();
+        }
+
+        return getOperationCategoryAllLevel(operationCategoryCode, dataType);
+    }
+
+
 	/**
 	 * 执行更新运营分类
 	 * @param ids					增量更新的id集合
@@ -395,8 +516,9 @@ public class SearchHelper {
     /**
      * 启动多线程完成数据填充
      */
-	public  <T extends SearchModel> List<T> getDataByThread(Set<String> ids,int threadPoolCount,SchedulerThreadData scheduler,Class<T> t) {
-		List<SchedulerIndexTask> tasks = new ArrayList<SchedulerIndexTask>();
+	public  <T extends SearchModel> List<T> getDataByThread(Set<String> ids,int threadPoolCount,SchedulerThreadData scheduler) {
+        int initCapacity = ids.size();
+		List<SchedulerIndexTask> tasks = new ArrayList<SchedulerIndexTask>(initCapacity);
 		ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(2, threadPoolCount, 600, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(100), new ThreadPoolExecutor.CallerRunsPolicy());
 		TaskMonitor monitor = new TaskMonitor();
 		 
@@ -409,7 +531,7 @@ public class SearchHelper {
 			tasks.add(task);
 		}
 				
-		List<T> newSolrIndexList = new ArrayList<T>();
+		List<T> newSolrIndexList = new ArrayList<T>(initCapacity);
 		try {
 			monitor.setTotal(tasks.size());
 			monitor.start();
@@ -435,7 +557,7 @@ public class SearchHelper {
 			
 			
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			throw new RuntimeException("执行获取数据出错：",e);
 		}finally{
 			threadPoolExecutor.shutdown();
 		}

@@ -1,8 +1,8 @@
 package com.mysoft.b2b.search.api;
 
-import java.util.Map;
-
 import com.mysoft.b2b.search.param.AnnouncementParam;
+
+import java.util.Map;
 
 /**
  * 招标预告订阅搜索

@@ -1,9 +1,9 @@
 package com.mysoft.b2b.search.api;
 
-import java.util.Set;
-
 import com.mysoft.b2b.search.param.BaseParam;
 import com.mysoft.b2b.search.param.SearchRecordParam;
+
+import java.util.Set;
 
 /**
  * 搜索记录
